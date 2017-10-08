@@ -27,7 +27,7 @@ NoOrientationController::NoOrientationController(const NoOrientationControllerCo
     configured = true;
 }
 
-Motion2D& NoOrientationController::update(double speed, double distanceError, double angleError, double curvature, double variationOfCurvature)
+base::commands::Motion2D& NoOrientationController::update(double speed, double distanceError, double angleError, double curvature, double variationOfCurvature)
 {
     if (!configured)
     {

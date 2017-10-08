@@ -23,7 +23,7 @@ SamsonController::SamsonController(const SamsonControllerConfig& config)
 }
 
     
-Motion2D& SamsonController::update(double speed, double distanceError, double angleError, double curvature, double variationOfCurvature)
+base::commands::Motion2D& SamsonController::update(double speed, double distanceError, double angleError, double curvature, double variationOfCurvature)
 {
     if (!configured)
     {

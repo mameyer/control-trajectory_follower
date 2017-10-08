@@ -23,7 +23,7 @@ public:
 
     SamsonController(const SamsonControllerConfig &config);
 
-    virtual Motion2D& update(double speed, double distanceError, double angleError, double curvature, double variationOfCurvature);
+    virtual base::commands::Motion2D& update(double speed, double distanceError, double angleError, double curvature, double variationOfCurvature);
     virtual void reset() {  };
 
 private:

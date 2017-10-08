@@ -19,7 +19,6 @@ double SubTrajectory::angleLimit(double angle)
 
 SubTrajectory::SubTrajectory()
 {
-    driveMode = ModeAckermann;
     speed = 0.;
 }
 
@@ -172,7 +171,6 @@ SubTrajectory::SubTrajectory(const base::Trajectory& trajectory)
     speed = trajectory.speed;
     startPose = getIntermediatePoint(posSpline.getStartParam());
     goalPose = getIntermediatePoint(posSpline.getEndParam());
-    driveMode = ModeAckermann;
 }
 
 double SubTrajectory::advance(double curveParam, double length)
@@ -413,7 +411,6 @@ Lateral::Lateral(const base::Pose2D& currentPose, double angle, double length, d
     poses.push_back(currentPose);
     poses.push_back(endPose);
     interpolate(poses);
-    driveMode = ModeDiagonal;
     this->speed = speed;
 }
 
@@ -427,6 +424,5 @@ Lateral::Lateral(const base::Pose2D& currentPose, const base::Position2D& end, d
     poses.push_back(currentPose);
     poses.push_back(endPose);
     interpolate(poses);
-    driveMode = ModeDiagonal;
     this->speed = speed;
 }

@@ -6,7 +6,6 @@
 #include <vector>
 #include <base/Trajectory.hpp>
 #include <stdexcept>
-#include "Motion2D.hpp"
 
 namespace trajectory_follower {
 
@@ -18,7 +17,6 @@ public:
     double speed;
     base::geometry::Spline<3> posSpline;
     base::geometry::Spline<1> orientationSpline;
-    DriveMode driveMode;
 
     SubTrajectory();
 

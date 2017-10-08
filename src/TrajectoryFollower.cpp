@@ -146,11 +146,10 @@ void TrajectoryFollower::computeErrors(const base::Pose& robotPose)
     angleError = err.second;
 }
 
-FollowerStatus TrajectoryFollower::traverseTrajectory(Motion2D &motionCmd, const base::Pose &robotPose)
 {
     motionCmd.translation = 0;
     motionCmd.rotation = 0;
-    motionCmd.heading = 0;
+    motionCmd.heading = base::Angle::fromRad(0);
 
     // Return if there is no trajectory to follow
     if(followerStatus == TRAJECTORY_FINISHED) {
@@ -235,7 +234,7 @@ FollowerStatus TrajectoryFollower::traverseTrajectory(Motion2D &motionCmd, const
                 && std::signbit(lastAngleError) == std::signbit(angleError))
         {
             motionCmd.rotation = pointTurnDirection * followerConf.pointTurnVelocity;
-            followerData.cmd = motionCmd.toBaseMotion2D();
+            followerData.cmd = motionCmd;
             return followerStatus;
         }
         else
@@ -263,8 +262,7 @@ FollowerStatus TrajectoryFollower::traverseTrajectory(Motion2D &motionCmd, const
         motionCmd.rotation = std::min(motionCmd.rotation,  followerConf.maxRotationalVelocity);
         motionCmd.rotation = std::max(motionCmd.rotation, -followerConf.maxRotationalVelocity);
     }
-
-    followerData.cmd = motionCmd.toBaseMotion2D();
+    followerData.cmd = motionCmd;
     return followerStatus;
 }
 
@@ -278,7 +276,6 @@ bool TrajectoryFollower::checkTurnOnSpot()
         std::cout << "robot orientation : OUT OF BOUND ["  << angleError << ", " << followerConf.pointTurnStart << "]. starting point-turn" << std::endl;
         pointTurn = true;
         followerStatus = EXEC_TURN_ON_SPOT;
-        this->trajectory.driveMode = ModeTurnOnTheSpot;
 
         if (angleError > 0)
             pointTurnDirection = -1.;

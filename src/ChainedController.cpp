@@ -35,7 +35,7 @@ ChainedController::ChainedController(const ChainedControllerConfig& config)
 }
 
     
-Motion2D& ChainedController::update(double speed, double distanceError, double angleError, double curvature, double variationOfCurvature)
+base::commands::Motion2D& ChainedController::update(double speed, double distanceError, double angleError, double curvature, double variationOfCurvature)
 {
     if (!configured)
     {

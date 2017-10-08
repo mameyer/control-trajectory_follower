@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Motion2D.hpp"
+#include <base/commands/Motion2D.hpp>
 
 namespace trajectory_follower
 {
@@ -14,11 +14,11 @@ public:
     
     virtual ~Controller();
 
-    virtual Motion2D& update(double speed, double distanceError, double angleError, double curvature, double variationOfCurvature) =0;
+    virtual base::commands::Motion2D& update(double speed, double distanceError, double angleError, double curvature, double variationOfCurvature) =0;
     virtual void reset() =0;
 
 protected:
     bool configured;
-    Motion2D motionCommand;
+    base::commands::Motion2D motionCommand;
 };
 }

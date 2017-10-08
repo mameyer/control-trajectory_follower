@@ -3,6 +3,7 @@
 
 #include "TrajectoryFollowerTypes.hpp"
 #include "SubTrajectory.hpp"
+#include <base/commands/Motion2D.hpp>
 
 #include "Controller.hpp"
 
@@ -46,7 +47,7 @@ public:
      * Generates motion commands that should make the robot follow the
      * trajectory
      */
-    FollowerStatus traverseTrajectory(Motion2D &motionCmd, const base::Pose &robotPose);
+    FollowerStatus traverseTrajectory(base::commands::Motion2D &motionCmd, const base::Pose &robotPose);
 
     /** Computes the reference pose and the error relative to this pose */
     void computeErrors(const base::Pose& robotPose);
