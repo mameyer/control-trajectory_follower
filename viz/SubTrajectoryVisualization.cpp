@@ -54,8 +54,12 @@ void SubTrajectoryVisualization::updateMainNode ( osg::Node* node )
                 auto ar = fac->createArrow(arColor, true);
                 ar.get()->setPosition(splinePoint.position.x(), splinePoint.position.y(), 0);
                 ar.get()->setAttitude(osg::Quat(M_PI/2, osg::Vec3d(1,0,0)));
-                ar.get()->rotate(traj.splineHeading(param) + M_PI /2., osg::Vec3d(0,0,1));
-                ar.get()->rotate(ori, osg::Vec3d(0,0,1));
+                ar.get()->rotate(ori + M_PI /2, osg::Vec3d(0,0,1));
+                
+                if (!traj.orientationSpline.isEmpty())
+                {
+                    ar.get()->rotate(traj.splineHeading(param), osg::Vec3d(0,0,1));
+                }
                 
                 geode->addChild(ar);
                 
