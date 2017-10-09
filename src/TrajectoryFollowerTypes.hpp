@@ -11,6 +11,7 @@
 #include "NoOrientationController.hpp"
 #include "SamsonController.hpp"
 #include "ChainedController.hpp"
+#include "SubTrajectory.hpp"
 
 namespace trajectory_follower
 {
@@ -86,11 +87,13 @@ struct FollowerData
 {
     double distanceError;
     double angleError;
+    double splineHeadingError;
     base::samples::RigidBodyState splineReference;
     base::samples::RigidBodyState currentPose;
     std::vector< base::Trajectory > currentTrajectory;
+    std::vector< trajectory_follower::SubTrajectory > subTrajectory;
     base::commands::Motion2D cmd;
-    base::samples::RigidBodyState splineSegmentStart, splineSegmentEnd;
+    base::samples::RigidBodyState splineSegmentStart, splineSegmentEnd, trajectoryEnd;
 };
 
 }

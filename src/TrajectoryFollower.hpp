@@ -73,6 +73,7 @@ private:
     double currentCurveParameter;
     double distanceError;
     double angleError, lastAngleError;
+    double splineHeadingError;
     double posError;
     double splineReferenceErrorCoefficient;
     FollowerData followerData;

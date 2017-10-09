@@ -84,8 +84,7 @@ public:
     double getClosestPoint(const base::Pose2D &pose, double guess, double start, double end);
     void setGeometricResolution(double geometricResolution);
     double getDistToGoal(double startParam) const;
-    std::pair<double, double> error(const Eigen::Vector2d &pos, double currentHeading, double curveParam, double forwardDist);
-    std::pair<double, double> error(const Eigen::Vector2d &pos, double currentHeading, double curveParam);
+    void error(const Eigen::Vector2d& pos, double currentHeading, double curveParam, double &distanceError, double &headingError, double &splineHeadingError);
     double advance(double curveParam, double length);
     double getCurvature(double param);
     double getCurvatureMax();
