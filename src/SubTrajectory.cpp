@@ -401,7 +401,7 @@ Lateral::Lateral()
 {
 }
 
-Lateral::Lateral(const base::Pose2D& currentPose, double angle, double length, double speed)
+Lateral::Lateral(const base::Pose2D& currentPose, const double &angle, const double &length, const double &speed)
     : SubTrajectory()
 {
     std::vector< base::Pose2D > poses;
@@ -414,7 +414,7 @@ Lateral::Lateral(const base::Pose2D& currentPose, double angle, double length, d
     this->speed = speed;
 }
 
-Lateral::Lateral(const base::Pose2D& currentPose, const base::Position2D& end, double speed)
+Lateral::Lateral(const base::Pose2D& currentPose, const base::Position2D& end, const double &speed)
     : SubTrajectory()
 {
     std::vector< base::Pose2D > poses;
@@ -424,5 +424,30 @@ Lateral::Lateral(const base::Pose2D& currentPose, const base::Position2D& end, d
     poses.push_back(currentPose);
     poses.push_back(endPose);
     interpolate(poses);
+    this->speed = speed;
+}
+
+Ackermann::Ackermann()
+    : SubTrajectory()
+{
+}
+
+Ackermann::Ackermann(const std::vector< base::Pose2D >& poses, const double &speed)
+    : SubTrajectory()
+{
+    interpolate(poses);
+    orientationSpline.clear();
+    this->speed = speed;
+}
+
+PointTurn::PointTurn()
+    : SubTrajectory()
+{
+}
+
+PointTurn::PointTurn(const base::Pose2D& pose, const std::vector< base::Angle >& angles, const double &speed)
+    : SubTrajectory()
+{
+    interpolate(pose, angles);
     this->speed = speed;
 }

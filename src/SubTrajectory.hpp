@@ -104,8 +104,22 @@ public:
 class Lateral : public SubTrajectory {
 public:
     Lateral();
-    Lateral(const base::Pose2D &currentPose, const base::Position2D &end, double speed);
-    Lateral(const base::Pose2D &currentPose, double angle, double length, double speed);
+    Lateral(const base::Pose2D &currentPose, const base::Position2D &end, const double &speed);
+    Lateral(const base::Pose2D &currentPose, const double &angle, const double &length, const double &speed);
+};
+
+class Ackermann : public SubTrajectory
+{
+public:
+    Ackermann();
+    Ackermann(const std::vector< base::Pose2D >& poses, const double &speed);
+};
+
+class PointTurn : public SubTrajectory
+{
+public:
+    PointTurn();
+    PointTurn(const base::Pose2D &pose, const std::vector<base::Angle> &angles, const double &speed);
 };
 
 }
