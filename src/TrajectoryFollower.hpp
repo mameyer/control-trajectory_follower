@@ -58,6 +58,7 @@ public:
     }
 
     bool checkTurnOnSpot();
+    bool checkTrajectoryFinished();
 
 private:
     bool configured;

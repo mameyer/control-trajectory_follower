@@ -190,44 +190,9 @@ void TrajectoryFollower::computeErrors(const base::Pose& robotPose)
     followerData.splineReference.position = Eigen::Vector3d(refPose.position.x(), refPose.position.y(), 0.);
     followerData.splineReference.orientation = Eigen::Quaterniond(Eigen::AngleAxisd(refPose.orientation, Eigen::Vector3d::UnitZ()));
 
-    double distanceToEnd = trajectory.getDistToGoal(currentCurveParameter);
     lastPosError = posError;
     posError = (robotPose.position.head(2) - trajectory.getGoalPose().position).norm();
-
-    bool reachedEnd = false;
-    // If distance to trajectory finish set
-    if (base::isUnset<double>(followerConf.trajectoryFinishDistance)) {
-        // Only curve parameter
-        if (!(currentCurveParameter < trajectory.getEndParam()))
-            reachedEnd = true;
-    } else {
-        // Distance along curve to end point
-        if (distanceToEnd <= followerConf.trajectoryFinishDistance)
-        {
-            if (followerConf.usePoseErrorReachedEndCheck)
-                nearEnd = true;
-            else
-                reachedEnd = true;
-        }
-
-        if (posError <= followerConf.trajectoryFinishDistance)
-            reachedEnd = true;
-    }
-
-    if (nearEnd) {
-        if (posError > lastPosError)
-            reachedEnd = true;
-    }
-
-    // If end reached
-    if (reachedEnd) {
-        // Trajectory finished
-        nearEnd = false;
-        LOG_INFO_S << "Trajectory follower finished";
-        followerStatus = TRAJECTORY_FINISHED;
-        return followerStatus;
-    }
-
+    
     if (checkTurnOnSpot()) {
         if ((angleError < -followerConf.pointTurnEnd
                 || angleError > followerConf.pointTurnEnd)
@@ -244,6 +209,15 @@ void TrajectoryFollower::computeErrors(const base::Pose& robotPose)
             pointTurnDirection = 1.;
             followerStatus = TRAJECTORY_FOLLOWING;
         }
+    }
+
+    // If end reached
+    if (trajectory.posSpline.isSingleton() || checkTrajectoryFinished()) {
+        // Trajectory finished
+        nearEnd = false;
+        LOG_INFO_S << "Trajectory follower finished";
+        followerStatus = TRAJECTORY_FINISHED;
+        return followerStatus;
     }
 
     motionCmd = controller->update(trajectory.getSpeed(), distanceError, angleError, trajectory.getCurvature(currentCurveParameter),
@@ -285,4 +259,48 @@ bool TrajectoryFollower::checkTurnOnSpot()
     }
 
     return false;
+bool TrajectoryFollower::checkTrajectoryFinished()
+{
+    bool reachedEnd = false;
+
+    double distanceToEnd = trajectory.getDistToGoal(currentCurveParameter);
+    // If distance to trajectory finish set
+    if (base::isUnset<double>(followerConf.trajectoryFinishDistance))
+    {
+        // Only curve parameter
+        if (!(currentCurveParameter < trajectory.getEndParam()))
+        {
+            reachedEnd = true;
+        }
+    }
+    else
+    {
+        // Distance along curve to end point
+        if (distanceToEnd <= followerConf.trajectoryFinishDistance)
+        {
+            if (followerConf.usePoseErrorReachedEndCheck)
+            {
+                nearEnd = true;
+            }
+            else
+            {
+                reachedEnd = true;
+            }
+        }
+
+        if (posError <= followerConf.trajectoryFinishDistance)
+        {
+            reachedEnd = true;
+        }
+    }
+
+    if (nearEnd)
+    {
+        if (posError > lastPosError)
+        {
+            reachedEnd = true;
+        }
+    }
+
+    return reachedEnd;
 }
