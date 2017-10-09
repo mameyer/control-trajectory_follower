@@ -32,15 +32,35 @@ void SubTrajectoryVisualization::updateMainNode ( osg::Node* node )
 
     osgviz::PrimitivesFactory* fac = osgviz::OsgViz::getInstance()->getModuleInstance<osgviz::PrimitivesFactory>("PrimitivesFactory");
     std::vector<osg::Vec3> osgPoints;
+    const osg::Vec4 arColor(1, 0, 1, 1);
     
-    for(const trajectory_follower::SubTrajectory& traj : p->data)
-    {
-        const base::geometry::Spline<3>& spline = traj.posSpline;
-        double stepSize = (spline.getEndParam() - spline.getStartParam()) / (spline.getCurveLength() / 0.05);
-        for(double param = spline.getStartParam(); param <= spline.getEndParam(); param += stepSize )
+    for (trajectory_follower::SubTrajectory& traj : p->data)
+    {   
+        double stepSize = (traj.getEndParam() - traj.getStartParam()) / (traj.posSpline.getCurveLength() / 0.05);
+        double pos = 0;
+        const double oriStep = 5 * stepSize;
+        
+        for (double param = traj.getStartParam(); param <= traj.getEndParam(); param += stepSize)
         {
-            const Eigen::Vector3d splinePoint = spline.getPoint(param);
-            osgPoints.emplace_back(splinePoint.x(), splinePoint.y(), splinePoint.z());
+            pos += stepSize;
+            
+            base::Pose2D splinePoint = traj.getIntermediatePoint(param);
+            osgPoints.emplace_back(splinePoint.position.x(), splinePoint.position.y(), 0);
+            
+            if (pos > oriStep)
+            {
+                double ori = splinePoint.orientation;
+                
+                auto ar = fac->createArrow(arColor, true);
+                ar.get()->setPosition(splinePoint.position.x(), splinePoint.position.y(), 0);
+                ar.get()->setAttitude(osg::Quat(M_PI/2, osg::Vec3d(1,0,0)));
+                ar.get()->rotate(traj.splineHeading(param) + M_PI /2., osg::Vec3d(0,0,1));
+                ar.get()->rotate(ori, osg::Vec3d(0,0,1));
+                
+                geode->addChild(ar);
+                
+                pos = 0;
+            }
         }
     }
     
