@@ -6,9 +6,16 @@
 #include <vector>
 #include <base/Trajectory.hpp>
 #include <stdexcept>
+#include <string>
 
 namespace trajectory_follower {
 
+enum SubTrajectoryKind
+{
+    TRAJECTORY_KIND_NORMAL, //a normal trajectory
+    TRAJECTORY_KIND_RESCUE //a special trajectory that is used to get out of unstable situations
+};
+    
 class SubTrajectory
 {
 public:
@@ -17,14 +24,19 @@ public:
     double speed;
     base::geometry::Spline<3> posSpline;
     base::geometry::Spline<1> orientationSpline;
-
+    
+    /**The kind of this trajectory. This does not influece how the trajectory 
+     * is followed. It is merely metadata. Some tasks may or may not behave differently
+     * if the kind is not NORMAL. */
+    SubTrajectoryKind kind;
+    
     SubTrajectory();
 
     SubTrajectory(const base::Trajectory &trajectory);
     
     static double angleLimit(double angle);
     
-    base::Trajectory toBaseTrajectory();
+    base::Trajectory toBaseTrajectory() const;
 
     /**
      * This method interpolates a point turn SubTrajectory
@@ -34,7 +46,7 @@ public:
 
     /**
      * This method tries to interpolate from a set of poses.
-     * For the direction of orienation change it always assumes
+     * For the direction of orientation change it always assumes
      * the shortest distance.
      *
      * */
@@ -42,7 +54,7 @@ public:
 
     /**
      * This method interpolates a Spline from a set of poses.
-     * For the direction of orientaiton a vector of orientation
+     * For the direction of orientation a vector of orientation
      * differences is given. This enables us to encode things like
      * Pose(0,0,0) -> Pose(1,1,0) With a full turn inbetween.
      * */
@@ -51,7 +63,7 @@ public:
     /**
      * Returns the Pose2D for param d;
      * The Orientation NOT be normalized.
-     * This is helpfull for the calculation of steering parameters.
+     * This is helpful for the calculation of steering parameters.
      * */
     base::Pose2D getIntermediatePoint(double d);
 

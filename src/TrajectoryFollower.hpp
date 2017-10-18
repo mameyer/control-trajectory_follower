@@ -6,6 +6,7 @@
 #include <base/commands/Motion2D.hpp>
 
 #include "Controller.hpp"
+#include <memory>
 
 namespace trajectory_follower
 {
@@ -20,10 +21,10 @@ public:
     /** Default constructor */
     TrajectoryFollower();
 
-    /** Contructor which takes in config.
+    /** Constructor which takes in config.
      *
      * Before using the follower make sure that the object is created
-     * using the correct config and this contructor, otherwise the
+     * using the correct config and this constructor, otherwise the
      * controller will cause runtime error */
     TrajectoryFollower(const FollowerConfig& followerConfig);
 
@@ -80,7 +81,7 @@ private:
     FollowerStatus followerStatus, lastFollowerStatus;
     SubTrajectory trajectory;
     FollowerConfig followerConf;
-    Controller *controller;
+    std::unique_ptr<Controller> controller;
 };
 
 }

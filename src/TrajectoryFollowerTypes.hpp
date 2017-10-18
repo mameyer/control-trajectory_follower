@@ -90,8 +90,7 @@ struct FollowerData
     double splineHeadingError;
     base::samples::RigidBodyState splineReference;
     base::samples::RigidBodyState currentPose;
-    std::vector< base::Trajectory > currentTrajectory;
-    std::vector< trajectory_follower::SubTrajectory > subTrajectory;
+    std::vector<SubTrajectory> currentTrajectory;
     base::commands::Motion2D cmd;
     base::samples::RigidBodyState splineSegmentStart, splineSegmentEnd, trajectoryEnd;
 };

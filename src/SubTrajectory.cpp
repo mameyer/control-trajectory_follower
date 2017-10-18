@@ -20,9 +20,10 @@ double SubTrajectory::angleLimit(double angle)
 SubTrajectory::SubTrajectory()
 {
     speed = 0.;
+    kind = trajectory_follower::TRAJECTORY_KIND_NORMAL;
 }
 
-base::Trajectory SubTrajectory::toBaseTrajectory()
+base::Trajectory SubTrajectory::toBaseTrajectory() const
 {
     base::Trajectory tr;
     tr.spline = posSpline;
@@ -171,6 +172,7 @@ SubTrajectory::SubTrajectory(const base::Trajectory& trajectory)
     speed = trajectory.speed;
     startPose = getIntermediatePoint(posSpline.getStartParam());
     goalPose = getIntermediatePoint(posSpline.getEndParam());
+    kind = trajectory_follower::TRAJECTORY_KIND_NORMAL;
 }
 
 double SubTrajectory::advance(double curveParam, double length)

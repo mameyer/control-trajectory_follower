@@ -29,13 +29,13 @@ TrajectoryFollower::TrajectoryFollower(const FollowerConfig& followerConfig)
     // Configures the controller according to controller type
     switch (controllerType) {
     case CONTROLLER_NO_ORIENTATION:
-        controller = new NoOrientationController(followerConf.noOrientationControllerConfig);
+        controller.reset(new NoOrientationController(followerConf.noOrientationControllerConfig));
         break;
     case CONTROLLER_CHAINED:
-        controller = new ChainedController(followerConf.chainedControllerConfig);
+        controller.reset(new ChainedController(followerConf.chainedControllerConfig));
         break;
     case CONTROLLER_SAMSON:
-        controller = new SamsonController(followerConf.samsonControllerConfig);
+        controller.reset(new SamsonController(followerConf.samsonControllerConfig));
         break;
     default:
         throw std::runtime_error("Wrong or no controller type given.");
@@ -83,9 +83,7 @@ void TrajectoryFollower::setNewTrajectory(const SubTrajectory &trajectory, const
     followerData.splineSegmentStart = followerData.splineReference;
     followerData.splineSegmentEnd = followerData.splineReference;
     followerData.currentTrajectory.clear();
-    followerData.currentTrajectory.push_back(this->trajectory.toBaseTrajectory());
-    followerData.subTrajectory.clear();
-    followerData.subTrajectory.push_back(this->trajectory);
+    followerData.currentTrajectory.push_back(this->trajectory);
     base::Pose2D endPose = this->trajectory.getGoalPose();
     followerData.trajectoryEnd.position = Eigen::Vector3d(endPose.position.x(), endPose.position.y(), 0.);
     followerData.trajectoryEnd.orientation = Eigen::Quaterniond(Eigen::AngleAxisd(endPose.orientation, Eigen::Vector3d::UnitZ()));
@@ -105,10 +103,11 @@ void TrajectoryFollower::computeErrors(const base::Pose& robotPose)
     if(!trajectory.driveForward())
         currentHeading = SubTrajectory::angleLimit(currentHeading + M_PI);
 
-    Eigen::Vector2d movementVector = currentPose.position.head(2) - lastPose.position.head(2);
-    double distanceMoved = movementVector.norm();
-    double movementDirection = atan2(movementVector.y(), movementVector.x());
+    const Eigen::Vector2d movementVector = currentPose.position.head<2>() - lastPose.position.head<2>();
+    const double distanceMoved = movementVector.norm();
+    const double movementDirection = atan2(movementVector.y(), movementVector.x());
 
+    // FIXME direction should simply be `trajectory.driveForward() ? 1.0 : -1.0`
     double direction = 1.;
     if (std::abs(SubTrajectory::angleLimit(movementDirection - currentHeading)) > base::Angle::fromDeg(90).getRad())
         direction = -1.;
@@ -137,10 +136,8 @@ void TrajectoryFollower::computeErrors(const base::Pose& robotPose)
     base::Pose2D splineStartPoint, splineEndPoint;
     splineStartPoint = trajectory.getIntermediatePoint(splineSegmentStartCurveParam);
     splineEndPoint = trajectory.getIntermediatePoint(splineSegmentEndCurveParam);
-    followerData.splineSegmentStart.position.x() = splineStartPoint.position.x();
-    followerData.splineSegmentStart.position.y() = splineStartPoint.position.y();
-    followerData.splineSegmentEnd.position.x() = splineEndPoint.position.x();
-    followerData.splineSegmentEnd.position.y() = splineEndPoint.position.y();
+    followerData.splineSegmentStart.position.head<2>() = splineStartPoint.position;
+    followerData.splineSegmentEnd.position.head<2>() = splineEndPoint.position;
     followerData.splineSegmentStart.orientation = Eigen::Quaterniond(Eigen::AngleAxisd(splineStartPoint.orientation, Eigen::Vector3d::UnitZ()));
     followerData.splineSegmentEnd.orientation = Eigen::Quaterniond(Eigen::AngleAxisd(splineEndPoint.orientation, Eigen::Vector3d::UnitZ()));
     
